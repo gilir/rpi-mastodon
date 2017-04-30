@@ -1,4 +1,4 @@
-FROM gilir/rpi-ruby-alpine
+FROM gilir/rpi-ruby
 
 ENV MASTODON_VERSION 1.3.2
 
