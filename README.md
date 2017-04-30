@@ -1,8 +1,5 @@
 # Mastodon - Docker ARM builds for Raspberry PI
-[![Docker Stars](https://img.shields.io/docker/stars/gilir/rpi-mastodon.svg?maxAge=2592000)](https://hub.docker.com/r/gilir/rpi-mastodon/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/gilir/rpi-mastodon.svg?maxAge=2592000)](https://hub.docker.com/r/gilir/rpi-mastodon/)
-[![Docker Image](https://images.microbadger.com/badges/image/gilir/rpi-mastodon.svg)](https://microbadger.com/images/gilir/rpi-mastodon "Get your own image badge on microbadger.com")
-[![Version](https://images.microbadger.com/badges/version/gilir/rpi-mastodon.svg)](https://microbadger.com/images/gilir/rpi-mastodon "Get your own version badge on microbadger.com")
+[![Docker Stars](https://img.shields.io/docker/stars/gilir/rpi-mastodon.svg?maxAge=2592000)](https://hub.docker.com/r/gilir/rpi-mastodon/)[![Docker Pulls](https://img.shields.io/docker/pulls/gilir/rpi-mastodon.svg?maxAge=2592000)](https://hub.docker.com/r/gilir/rpi-mastodon/)[![Docker Image](https://images.microbadger.com/badges/image/gilir/rpi-mastodon.svg)](https://microbadger.com/images/gilir/rpi-mastodon "Get your own image badge on microbadger.com")[![Version](https://images.microbadger.com/badges/version/gilir/rpi-mastodon.svg)](https://microbadger.com/images/gilir/rpi-mastodon "Get your own version badge on microbadger.com")
 
 
 ## About Mastodon
@@ -19,7 +16,7 @@ Based on upstream version of Dockerbuild. See Tags for the versions available.
 
 ## How to use
 
-Please refer to the [upstream docker instruction](https://github.com/tootsuite/documentation/blob/master/Running-Mastodon/Docker-Guide.md).
+Please refer to the [upstream docker instructions](https://github.com/tootsuite/documentation/blob/master/Running-Mastodon/Docker-Guide.md).
 
 Mastodon need several services to run properly :
 - Postgres (you can use this image: armhf/postgres:9.6-alpine)
