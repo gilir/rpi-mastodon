@@ -1,6 +1,6 @@
 FROM gilir/rpi-ruby-alpine
 
-ENV MASTODON_VERSION 1.3.1
+ENV MASTODON_VERSION 1.3.2
 
 LABEL maintainer="julien@lavergne.online" \
       description="A GNU Social-compatible microblogging server" \
