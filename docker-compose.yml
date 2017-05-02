@@ -34,8 +34,8 @@ services:
     networks:
       - proxy-network
     volumes:
-      - mastodon_public_assets:/mastodon/public/assets
-      - mastodon_public_system:/mastodon/public/system
+      - mastodon_public_assets:/public/assets
+      - mastodon_public_system:/public/system
     labels:
       - "traefik.docker.network=proxy-network"
       - "traefik.backend=mastodon-web"
