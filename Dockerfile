@@ -8,7 +8,7 @@ RUN apk --no-cache upgrade \
        ca-certificates
 
 # Version
-ARG MASTODON_VERSION=1.3.2
+ARG MASTODON_VERSION=1.3.3
 
 ENV RAILS_ENV=production \
     NODE_ENV=production
@@ -18,11 +18,12 @@ ADD https://github.com/tootsuite/mastodon/archive/v${MASTODON_VERSION}.tar.gz .
 RUN tar -xvf v${MASTODON_VERSION}.tar.gz \
  && mkdir -p /tmp/mastodon/build/ \
  && mv mastodon-*/* /tmp/mastodon/build/ \
+ && mv mastodon-*/.[^\.]* /tmp/mastodon/build/ \
  && rm -f v${MASTODON_VERSION}.tar.gz \
-
-WORKDIR /mastodon
-
-RUN cp /tmp/mastodon/build/Gemfile . \
+ && rm -rf mastodon-*/ \
+ && mkdir /mastodon \
+ && cd mastodon/ \
+ && cp /tmp/mastodon/build/Gemfile . \
  && cp /tmp/mastodon/build/Gemfile.lock . \
  && cp /tmp/mastodon/build/package.json . \
  && cp /tmp/mastodon/build/Gemfile.lock . \
@@ -53,7 +54,10 @@ RUN cp /tmp/mastodon/build/Gemfile . \
  && apk del build-dependencies \
  && rm -rf /var/cache/apk/* \
  && cp -r /tmp/mastodon/build/* . \
+ && cp -r /tmp/mastodon/build/.[^\.]* . \
  && rm -rf /tmp/mastodon/
+
+WORKDIR /mastodon
 
 VOLUME /mastodon/public/system /mastodon/public/assets
 
