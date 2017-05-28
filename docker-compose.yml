@@ -8,15 +8,19 @@ services:
       - proxy-network
     volumes:
       - mastodon_postgres:/var/lib/postgresql/data
-
+    labels:
+      - "traefik.enable=false"
   redis:
     restart: always
     image: armhf/redis
     container_name: mastodon-redis
+    command: redis-server --appendonly yes
     networks:
       - proxy-network
     volumes:
       - mastodon_redis:/data
+    labels:
+      - "traefik.enable=false"
 
   mastodon-web:
     restart: always
@@ -46,26 +50,27 @@ services:
       - WEB_CONCURRENCY=1
       - MAX_THREADS=5
 
-  streaming:
-    restart: always
-    build: .
-    image: gilir/rpi-mastodon
-    container_name: mastodon-streaming
-    env_file: .env.production
-    command: npm run start
-    ports:
-      - "4001:4000"
-    labels:
-      - "traefik.docker.network=proxy-network"
-#      - "traefik.backend=mastodon-web"
-      - "traefik.port=4000"
-#      - "traefik.protocol=wss"
-      - "traefik.frontend.rule=Host:mastodon.lavergne.online;PathPrefixStrip:/api/v1/streaming"
-    depends_on:
-      - db
-      - redis
-    networks:
-      - proxy-network
+#  streaming:
+#    restart: always
+#    build: .
+#    image: gilir/rpi-mastodon
+#    container_name: mastodon-streaming
+#    env_file: .env.production
+#    command: npm run start
+#    ports:
+#      - "4001:4000"
+#    labels:
+#      - "traefik.enable=false"
+##      - "traefik.docker.network=proxy-network"
+##      - "traefik.backend=mastodon-web"
+##      - "traefik.port=4000"
+##      - "traefik.protocol=wss"
+##      - "traefik.frontend.rule=Host:mastodon.lavergne.online;PathPrefixStrip:/api/v1/streaming"
+#    depends_on:
+#      - db
+#      - redis
+#    networks:
+#      - proxy-network
 
   sidekiq:
     restart: always
@@ -81,7 +86,6 @@ services:
       - mastodon_public_system:/mastodon/public/system
     networks:
       - proxy-network
-
 
 networks:
   proxy-network:
