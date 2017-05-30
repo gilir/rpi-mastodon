@@ -8,12 +8,15 @@ RUN apk --no-cache upgrade \
        ca-certificates
 
 # Version
-ARG MASTODON_VERSION=1.3.3
+ARG MASTODON_VERSION=1.4.1
 
-ENV RAILS_ENV=production \
-    NODE_ENV=production
+ENV UID=991 GID=991 \
+    RAILS_SERVE_STATIC_FILES=true \
+    RAILS_ENV=production NODE_ENV=production
 
 ADD https://github.com/tootsuite/mastodon/archive/v${MASTODON_VERSION}.tar.gz .
+
+COPY docker_entrypoint.sh /usr/local/bin/run
 
 RUN tar -xvf v${MASTODON_VERSION}.tar.gz \
  && mkdir -p /tmp/mastodon/build/ \
@@ -34,6 +37,7 @@ RUN tar -xvf v${MASTODON_VERSION}.tar.gz \
     libxslt-dev \
     build-base \
     python-dev \
+    protobuf-dev \
     git \
 # Can't use no--cache with @edge
  && apk -U upgrade && apk add \
@@ -45,9 +49,11 @@ RUN tar -xvf v${MASTODON_VERSION}.tar.gz \
     ffmpeg \
     file \
     imagemagick@edge \
+    protobuf \
+    tini \
  && npm install -g npm@3 && npm install -g yarn \
  && bundle install --deployment --without test development \
- && yarn --ignore-optional \
+ && yarn --ignore-optional --pure-lockfile \
  && yarn cache clean \
  && npm -g cache clean \
  && update-ca-certificates \
@@ -55,11 +61,13 @@ RUN tar -xvf v${MASTODON_VERSION}.tar.gz \
  && rm -rf /var/cache/apk/* \
  && cp -r /tmp/mastodon/build/* . \
  && cp -r /tmp/mastodon/build/.[^\.]* . \
- && rm -rf /tmp/mastodon/
+ && rm -rf /tmp/mastodon/ \
+ && rm -rf /tmp/* \
+ && chmod +x /usr/local/bin/run
 
 WORKDIR /mastodon
 
-VOLUME /mastodon/public/system /mastodon/public/assets
+VOLUME /mastodon/public/system /mastodon/public/assets /mastodon/public/packs
 
 LABEL maintainer="julien@lavergne.online" \
       description="A GNU Social-compatible microblogging server" \
@@ -67,3 +75,5 @@ LABEL maintainer="julien@lavergne.online" \
       project_url="https://github.com/tootsuite/mastodon"
 
 EXPOSE 3000 4000
+
+ENTRYPOINT ["/usr/local/bin/run"]

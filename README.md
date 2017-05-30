@@ -11,7 +11,7 @@ An alternative implementation of the GNU social project. Based on [ActivityStrea
 Based on upstream version of Dockerbuild. See Tags for the versions available.
 
 ## Features
-- Alpine 3.5
+- Alpine 3.4
 - Ruby 2.4.1
 
 ## How to use
