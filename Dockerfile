@@ -52,6 +52,8 @@ RUN tar -xvf v${MASTODON_VERSION}.tar.gz \
     protobuf \
     tini \
  && npm install -g npm@3 && npm install -g yarn \
+# Rebuild to support arm architecture
+ && npm rebuild node-sass \
  && bundle install --deployment --without test development \
  && yarn --ignore-optional --pure-lockfile \
  && yarn cache clean \
