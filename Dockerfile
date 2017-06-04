@@ -59,7 +59,8 @@ RUN tar -xvf v${MASTODON_VERSION}.tar.gz \
  && yarn cache clean \
  && npm -g cache clean \
  && update-ca-certificates \
- && apk del build-dependencies \
+# Don't remove build-dependencies, because rebuilding the assets trigger a rebuild of packages.
+# && apk del build-dependencies \
  && rm -rf /var/cache/apk/* \
  && cp -r /tmp/mastodon/build/* . \
  && cp -r /tmp/mastodon/build/.[^\.]* . \
