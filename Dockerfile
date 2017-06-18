@@ -1,4 +1,4 @@
-FROM gilir/rpi-ruby
+FROM arm32v6/alpine:3.6
 
 # Upgrating the image first, to have the last version of all packages, and to
 # share the same layer accros the images
@@ -8,30 +8,19 @@ RUN apk --no-cache upgrade \
        ca-certificates
 
 # Version
-ARG MASTODON_VERSION=1.4.1
+ARG MASTODON_VERSION=1.4.3
 
 ENV UID=991 GID=991 \
+    RUN_DB_MIGRATIONS=true \
+    SIDEKIQ_WORKERS=5 \
     RAILS_SERVE_STATIC_FILES=true \
-    RAILS_ENV=production NODE_ENV=production
+    RAILS_ENV=production \
+    NODE_ENV=production \
+    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/mastodon/bin
 
-ADD https://github.com/tootsuite/mastodon/archive/v${MASTODON_VERSION}.tar.gz .
+WORKDIR /mastodon
 
-COPY docker_entrypoint.sh /usr/local/bin/run
-
-RUN tar -xvf v${MASTODON_VERSION}.tar.gz \
- && mkdir -p /tmp/mastodon/build/ \
- && mv mastodon-*/* /tmp/mastodon/build/ \
- && mv mastodon-*/.[^\.]* /tmp/mastodon/build/ \
- && rm -f v${MASTODON_VERSION}.tar.gz \
- && rm -rf mastodon-*/ \
- && mkdir /mastodon \
- && cd mastodon/ \
- && cp /tmp/mastodon/build/Gemfile . \
- && cp /tmp/mastodon/build/Gemfile.lock . \
- && cp /tmp/mastodon/build/package.json . \
- && cp /tmp/mastodon/build/Gemfile.lock . \
- && echo "@edge https://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
- && apk --no-cache add --virtual build-dependencies \
+RUN apk --no-cache add --virtual build-dependencies \
     postgresql-dev \
     libxml2-dev \
     libxslt-dev \
@@ -39,44 +28,57 @@ RUN tar -xvf v${MASTODON_VERSION}.tar.gz \
     python-dev \
     protobuf-dev \
     git \
-# Can't use no--cache with @edge
- && apk -U upgrade && apk add \
-    nodejs@edge \
-    nodejs-npm@edge \
+    ruby-dev \
+    ruby-rdoc \
+    libffi-dev \
+    wget \
+    tar \
+ && apk --no-cache add \
+    nodejs-current-npm \
+    nodejs-current \
     libpq \
     libxml2 \
     libxslt \
     ffmpeg \
     file \
-    imagemagick@edge \
+    imagemagick \
     protobuf \
     tini \
+    ruby \
+ 	ruby-rake \
+    ruby-bigdecimal \
+    ruby-io-console \
+    ruby-irb \
+    ruby-json \
+    s6 \
+ && update-ca-certificates \
+ && wget -qO- https://github.com/tootsuite/mastodon/archive/v${MASTODON_VERSION}.tar.gz | tar xz --strip 1 \
+ && gem install bundler \
+ && bundle install --deployment --clean --no-cache --without test development \
  && npm install -g npm@3 && npm install -g yarn \
 # Rebuild to support arm architecture
  && npm rebuild node-sass \
- && bundle install --deployment --without test development \
  && yarn --ignore-optional --pure-lockfile \
- && yarn cache clean \
- && npm -g cache clean \
- && update-ca-certificates \
-# Don't remove build-dependencies, because rebuilding the assets trigger a rebuild of packages.
-# && apk del build-dependencies \
- && rm -rf /var/cache/apk/* \
- && cp -r /tmp/mastodon/build/* . \
- && cp -r /tmp/mastodon/build/.[^\.]* . \
- && rm -rf /tmp/mastodon/ \
- && rm -rf /tmp/* \
- && chmod +x /usr/local/bin/run
+ && SECRET_KEY_BASE=$(rake secret) rake assets:precompile \
+ && npm -g cache clean && yarn cache clean \
+ && mv public/assets /tmp/assets && mv public/packs /tmp/packs \
+ && apk del build-dependencies \
+ && rm -rf /var/cache/apk/*
 
-WORKDIR /mastodon
+COPY rootfs /
 
-VOLUME /mastodon/public/system /mastodon/public/assets /mastodon/public/packs
+RUN chmod +x /usr/local/bin/* /etc/s6.d/*/* /etc/s6.d/.s6-svscan/*
+
+VOLUME /mastodon/public/system /mastodon/public/assets /mastodon/public/packs /mastodon/log
 
 LABEL maintainer="julien@lavergne.online" \
       description="A GNU Social-compatible microblogging server" \
       mastodon_version="${MASTODON_VERSION}" \
-      project_url="https://github.com/tootsuite/mastodon"
+      project_url="https://github.com/tootsuite/mastodon" \
+      original_maintainer="Wonderfall <wonderfall@targaryen.house>"
 
 EXPOSE 3000 4000
 
 ENTRYPOINT ["/usr/local/bin/run"]
+
+CMD ["/bin/s6-svscan", "/etc/s6.d"]
