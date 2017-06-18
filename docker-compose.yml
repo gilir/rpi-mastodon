@@ -50,6 +50,8 @@ services:
     environment:
       - WEB_CONCURRENCY=1
       - MAX_THREADS=5
+      - SIDEKIQ_WORKERS=25
+      - RUN_DB_MIGRATIONS=true
 
 #  streaming:
 #    restart: always
@@ -73,20 +75,20 @@ services:
 #    networks:
 #      - proxy-network
 
-  sidekiq:
-    restart: always
-    build: .
-    image: gilir/rpi-mastodon
-    container_name: mastodon-sidekiq
-    env_file: .env.production
-    command: bundle exec sidekiq -q default -q mailers -q pull -q push
-    depends_on:
-      - db
-      - redis
-    volumes:
-      - mastodon_public_system:/mastodon/public/system
-    networks:
-      - proxy-network
+#  sidekiq:
+#    restart: always
+#    build: .
+#    image: gilir/rpi-mastodon
+#    container_name: mastodon-sidekiq
+#    env_file: .env.production
+#    command: bundle exec sidekiq -q default -q mailers -q pull -q push
+#    depends_on:
+#      - db
+#      - redis
+#    volumes:
+#      - mastodon_public_system:/mastodon/public/system
+#    networks:
+#      - proxy-network
 
 networks:
   proxy-network:
