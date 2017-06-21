@@ -1,9 +1,17 @@
-version: '2'
+version: '3'
 services:
   db:
-    restart: always
     image: armhf/postgres:9.6-alpine
-    container_name: mastodon-db
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     networks:
       - proxy-network
     volumes:
@@ -11,9 +19,17 @@ services:
     labels:
       - "traefik.enable=false"
   redis:
-    restart: always
     image: armhf/redis
-    container_name: mastodon-redis
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     command: redis-server --appendonly yes
     networks:
       - proxy-network
@@ -23,10 +39,7 @@ services:
       - "traefik.enable=false"
 
   web:
-    restart: always
-    build: .
     image: gilir/rpi-mastodon
-    container_name: mastodon-web
     env_file: .env.production
     ports:
       - "3000:3000"
@@ -41,11 +54,22 @@ services:
       - mastodon_public_packs:/mastodon/public/packs
       - mastodon_public_system:/mastodon/public/system
       - mastodon_log:/mastodon/log
-    labels:
-      - "traefik.docker.network=proxy-network"
-      - "traefik.backend=mastodon-web"
-      - "traefik.port=3000"
-      - "traefik.frontend.rule=Host:mastodon.lavergne.online"
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      labels:
+        - traefik.frontend.rule=Host:mastodon.lavergne.online
+        - traefik.docker.network=proxy-network
+        - traefik.port=3000
+        - traefik.backend=mastodon-web
+        - traefik.frontend.entryPoints=https,http
     environment:
       - WEB_CONCURRENCY=1
       - MAX_THREADS=5
@@ -67,4 +91,6 @@ volumes:
   mastodon_public_system:
     external: true
   mastodon_public_packs:
+    external: true
+  mastodon_log:
     external: true
