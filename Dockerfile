@@ -8,7 +8,7 @@ RUN apk --no-cache upgrade \
        ca-certificates
 
 # Version
-ARG MASTODON_VERSION=1.4.7
+ARG MASTODON_VERSION=1.5.0
 
 ENV UID=991 GID=991 \
     RUN_DB_MIGRATIONS=true \
