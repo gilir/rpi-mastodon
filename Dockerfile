@@ -28,7 +28,7 @@ RUN apk --no-cache add --virtual build-dependencies \
     python-dev \
     protobuf-dev \
     git \
-    icu-libs \
+    icu-dev \
     libidn-dev \
     ruby-dev \
     ruby-rdoc \
