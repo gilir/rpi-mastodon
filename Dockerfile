@@ -28,6 +28,8 @@ RUN apk --no-cache add --virtual build-dependencies \
     python-dev \
     protobuf-dev \
     git \
+    icu-libs \
+    libidn-dev \
     ruby-dev \
     ruby-rdoc \
     libffi-dev \
@@ -41,6 +43,8 @@ RUN apk --no-cache add --virtual build-dependencies \
     libxslt \
     ffmpeg \
     file \
+    icu-libs \
+    libidn \
     imagemagick \
     protobuf \
     tini \
@@ -59,7 +63,7 @@ RUN apk --no-cache add --virtual build-dependencies \
 # Rebuild to support arm architecture
  && npm rebuild node-sass \
  && yarn --ignore-optional --pure-lockfile \
- && SECRET_KEY_BASE=$(rake secret) rake assets:precompile \
+ && SECRET_KEY_BASE=$(rake secret) SMTP_FROM_ADDRESS= rake assets:precompile \
  && npm -g cache clean && yarn cache clean \
  && mv public/assets /tmp/assets && mv public/packs /tmp/packs \
  && apk del build-dependencies \
