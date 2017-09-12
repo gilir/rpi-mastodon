@@ -8,7 +8,10 @@ RUN apk --no-cache upgrade \
        ca-certificates
 
 # Version
-ARG MASTODON_VERSION=1.5.1
+ARG MASTODON_VERSION=1.6.0
+
+ARG LIBICONV_VERSION=1.15
+ARG LIBICONV_DOWNLOAD_SHA256=ccf536620a45458d26ba83887a983b96827001e92a13847b45e4925cc8913178
 
 ENV UID=991 GID=991 \
     RUN_DB_MIGRATIONS=true \
@@ -22,13 +25,12 @@ WORKDIR /mastodon
 
 RUN apk --no-cache add --virtual build-dependencies \
     postgresql-dev \
-    libxml2-dev \
-    libxslt-dev \
     build-base \
     python-dev \
     protobuf-dev \
     git \
     icu-dev \
+    libtool \
     libidn-dev \
     ruby-dev \
     ruby-rdoc \
@@ -39,8 +41,6 @@ RUN apk --no-cache add --virtual build-dependencies \
     nodejs-current-npm \
     nodejs-current \
     libpq \
-    libxml2 \
-    libxslt \
     ffmpeg \
     file \
     icu-libs \
@@ -48,20 +48,32 @@ RUN apk --no-cache add --virtual build-dependencies \
     imagemagick \
     protobuf \
     tini \
+    yarn \
     ruby \
- 	ruby-rake \
+    ruby-rake \
     ruby-bigdecimal \
     ruby-io-console \
     ruby-irb \
     ruby-json \
     s6 \
- && update-ca-certificates \
+ && update-ca-certificates
+
+RUN wget -O libiconv.tar.gz "http://ftp.gnu.org/pub/gnu/libiconv/libiconv-$LIBICONV_VERSION.tar.gz" \
+ && echo "$LIBICONV_DOWNLOAD_SHA256 *libiconv.tar.gz" | sha256sum -c - \
+ && mkdir -p /tmp/src \
+ && tar -xzf libiconv.tar.gz -C /tmp/src \
+ && rm libiconv.tar.gz \
+ && cd /tmp/src/libiconv-$LIBICONV_VERSION \
+ && ./configure --prefix=/usr/local \
+ && make -j$(getconf _NPROCESSORS_ONLN)\
+ && make install \
+ && libtool --finish /usr/local/lib
+
+RUN cd /mastodon \
  && wget -qO- https://github.com/tootsuite/mastodon/archive/v${MASTODON_VERSION}.tar.gz | tar xz --strip 1 \
  && gem install bundler \
- && bundle install --deployment --clean --no-cache --without test development \
- && npm install -g npm@3 && npm install -g yarn \
-# Rebuild to support arm architecture
- && npm rebuild node-sass \
+ && bundle config build.nokogiri --with-iconv-lib=/usr/local/lib --with-iconv-include=/usr/local/include \
+ && bundle install -j$(getconf _NPROCESSORS_ONLN) --deployment --clean --no-cache --without test development \
  && yarn --ignore-optional --pure-lockfile \
  && SECRET_KEY_BASE=$(rake secret) SMTP_FROM_ADDRESS= rake assets:precompile \
  && npm -g cache clean && yarn cache clean \
