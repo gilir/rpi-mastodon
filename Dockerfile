@@ -8,7 +8,7 @@ RUN apk --no-cache upgrade \
        ca-certificates
 
 # Version
-ARG MASTODON_VERSION=1.6.1
+ARG MASTODON_VERSION=2.0.0
 
 ARG LIBICONV_VERSION=1.15
 ARG LIBICONV_DOWNLOAD_SHA256=ccf536620a45458d26ba83887a983b96827001e92a13847b45e4925cc8913178
@@ -71,7 +71,9 @@ RUN wget -O libiconv.tar.gz "http://ftp.gnu.org/pub/gnu/libiconv/libiconv-$LIBIC
 
 RUN cd /mastodon \
  && wget -qO- https://github.com/tootsuite/mastodon/archive/v${MASTODON_VERSION}.tar.gz | tar xz --strip 1 \
+ && gem install rake -v 12.1.0 \
  && gem install bundler \
+ && npm install --global yarn@0.25.2 \
  && bundle config build.nokogiri --with-iconv-lib=/usr/local/lib --with-iconv-include=/usr/local/include \
  && bundle install -j$(getconf _NPROCESSORS_ONLN) --deployment --clean --no-cache --without test development \
  && yarn --ignore-optional --pure-lockfile \
@@ -80,6 +82,10 @@ RUN cd /mastodon \
  && mv public/assets /tmp/assets && mv public/packs /tmp/packs \
  && apk del build-dependencies \
  && rm -rf /var/cache/apk/*
+
+RUN apk --no-cache add ruby-rdoc \
+ && apk del ruby-rake \
+ && gem install rake -v 12.1.0
 
 COPY rootfs /
 
