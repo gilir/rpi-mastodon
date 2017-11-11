@@ -1,0 +1,23 @@
+version: '2'
+services:
+  mastodon-redis:
+    restart: always
+    image: arm64v8/redis
+    container_name: mastodon-redis
+    command: redis-server --appendonly yes
+    networks:
+      - proxy-network
+    volumes:
+      - mastodon_redis:/data
+    labels:
+      - "traefik.enable=false"
+
+networks:
+  proxy-network:
+    external:
+      name: proxy-network
+
+volumes:
+  mastodon_redis:
+    external: true
+
