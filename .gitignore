@@ -1,4 +1,6 @@
 # Data files
 data
+postgres/data
+redis/data
 # Environment file
 .env.production
