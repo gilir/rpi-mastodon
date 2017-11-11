@@ -1,1 +1,4 @@
+# Data files
+data
+# Environment file
 .env.production
