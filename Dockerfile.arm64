@@ -58,7 +58,7 @@ RUN apk --no-cache add --virtual build-dependencies \
     s6 \
  && update-ca-certificates
 
-RUN wget -O libiconv.tar.gz "http://ftp.gnu.org/pub/gnu/libiconv/libiconv-$LIBICONV_VERSION.tar.gz" \
+RUN wget -O libiconv.tar.gz "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-$LIBICONV_VERSION.tar.gz" \
  && echo "$LIBICONV_DOWNLOAD_SHA256 *libiconv.tar.gz" | sha256sum -c - \
  && mkdir -p /tmp/src \
  && tar -xzf libiconv.tar.gz -C /tmp/src \
