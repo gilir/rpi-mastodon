@@ -1,6 +1,9 @@
 # Data files
 data
 postgres/data
+postgres/input
+postgres/*.bck
 redis/data
+redis/redis_2
 # Environment file
 .env.production
