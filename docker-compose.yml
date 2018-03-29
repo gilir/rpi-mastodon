@@ -1,39 +1,13 @@
 version: '2'
 services:
-  db:
+  mastodon-web:
     restart: always
-    image: armhf/postgres:9.6-alpine
-    container_name: mastodon-db
-    networks:
-      - proxy-network
-    volumes:
-      - mastodon_postgres:/var/lib/postgresql/data
-    labels:
-      - "traefik.enable=false"
-  redis:
-    restart: always
-    image: armhf/redis
-    container_name: mastodon-redis
-    command: redis-server --appendonly yes
-    networks:
-      - proxy-network
-    volumes:
-      - mastodon_redis:/data
-    labels:
-      - "traefik.enable=false"
-
-  web:
-    restart: always
-    build: .
-    image: gilir/rpi-mastodon
+    image: gilir/arm64-mastodon
     container_name: mastodon-web
     env_file: .env.production
     ports:
       - "3000:3000"
-      - "4000:4000"
-    depends_on:
-      - db
-      - redis
+#      - "4000:4000"
     networks:
       - proxy-network
     volumes:
@@ -42,15 +16,17 @@ services:
       - mastodon_public_system:/mastodon/public/system
       - mastodon_log:/mastodon/log
     labels:
-      - "traefik.docker.network=proxy-network"
-      - "traefik.backend=mastodon-web"
-      - "traefik.port=3000"
-      - "traefik.frontend.rule=Host:mastodon.lavergne.online"
+      - traefik.frontend.rule=Host:mastodon.lavergne.online
+      - traefik.docker.network=proxy-network
+      - traefik.port=3000
+      - traefik.backend=mastodon-web
+      - traefik.frontend.entryPoints=https,http
     environment:
       - WEB_CONCURRENCY=1
       - MAX_THREADS=5
       - SIDEKIQ_WORKERS=5
       - RUN_DB_MIGRATIONS=true
+      - RAILS_SERVE_STATIC_FILES=false
 
 networks:
   proxy-network:
@@ -58,13 +34,11 @@ networks:
       name: proxy-network
 
 volumes:
-  mastodon_postgres:
-    external: true
-  mastodon_redis:
-    external: true
   mastodon_public_assets:
     external: true
   mastodon_public_system:
     external: true
   mastodon_public_packs:
+    external: true
+  mastodon_log:
     external: true
