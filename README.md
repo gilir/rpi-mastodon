@@ -11,9 +11,9 @@ An alternative implementation of the GNU social project. Based on [ActivityStrea
 Based on upstream version of Dockerbuild. See Tags for the versions available.
 
 ## Features
-- Alpine 3.6
-- NodeJS 7.10
-- Ruby 2.4.1
+- Alpine 3.7
+- NodeJS 8.9.3
+- Ruby 2.4.3
 
 ## How to use
 
@@ -37,5 +37,5 @@ Be sure to add volume persistence for production use (see `volumes` in docker-co
 Please refer to the [upstream documentation](https://github.com/tootsuite/documentation/blob/master/Running-Mastodon/Administration-guide.md) for more information about the maintenance.
 
 # Sources
-- Gogs: https://gogs.lavergne.online/gilir/rpi-mastodon.git
+- Gitea: https://gitea.lavergne.online/docker/mastodon
 - Github: https://github.com/gilir/rpi-mastodon
