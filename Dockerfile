@@ -1,3 +1,10 @@
+# With a recent version of docker, you can use "FROM alpine" statement 
+# and it will put the right arch image, dependenting of the host which build the image
+# If you ant to force the arch, you can replace "FROM alpine" by :
+# for 32 bits / armhf, for all compatibility with all the rapsberry pi
+#FROM arm32v6/alpine
+# for 64 bits arm64 / aarch64
+#FROM arm64v8/alpine
 FROM alpine:3.7
 
 # Upgrating the image first, to have the last version of all packages, and to
