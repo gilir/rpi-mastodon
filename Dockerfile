@@ -1,4 +1,4 @@
-FROM arm64v8/alpine:3.7
+FROM alpine:3.7
 
 # Upgrating the image first, to have the last version of all packages, and to
 # share the same layer accros the images
