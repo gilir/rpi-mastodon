@@ -95,7 +95,7 @@ RUN cd /mastodon \
 # && npm install --global yarn@0.25.2 \
  && bundle config build.nokogiri --with-iconv-lib=/usr/local/lib --with-iconv-include=/usr/local/include \
  && bundle install -j$(getconf _NPROCESSORS_ONLN) --deployment --clean --no-cache --without test development \
- && yarn --ignore-optional --pure-lockfile \
+ && yarn --ignore-optional --pure-lockfile --ignore-engines \
  && SECRET_KEY_BASE=$(rake secret) OTP_SECRET=$(rake secret) SMTP_FROM_ADDRESS= rake assets:precompile \
 # && npm -g cache clean \ 
  && yarn cache clean \
