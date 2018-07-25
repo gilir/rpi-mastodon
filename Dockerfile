@@ -15,7 +15,7 @@ RUN apk --no-cache upgrade \
        ca-certificates
 
 # Version
-ARG MASTODON_VERSION=2.3.3
+ARG MASTODON_VERSION=2.4.3
 
 ARG YARN_VERSION=1.5.1
 ARG YARN_DOWNLOAD_SHA256=cd31657232cf48d57fdbff55f38bfa058d2fb4950450bd34af72dac796af4de1
@@ -89,7 +89,7 @@ RUN wget -O libiconv.tar.gz "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-$LIBI
 
 RUN cd /mastodon \
  && wget -qO- https://github.com/tootsuite/mastodon/archive/v${MASTODON_VERSION}.tar.gz | tar xz --strip 1 \
- && gem install rake -v 12.3.0 \
+ && gem install rake -v 12.3.1 \
   && gem install bundler \
  && npm config set unsafe-perm true \
 # && npm install --global yarn@0.25.2 \
@@ -105,7 +105,7 @@ RUN cd /mastodon \
 
 RUN apk --no-cache add ruby-rdoc \
  && apk del ruby-rake \
- && gem install rake -v 12.3.0
+ && gem install rake -v 12.3.1
 
 COPY rootfs /
 
