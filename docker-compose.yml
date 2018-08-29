@@ -7,7 +7,7 @@ services:
     env_file: .env.production
     ports:
       - "3000:3000"
-#      - "4000:4000"
+      - "4000:4000"
     networks:
       - proxy-network
     volumes:
@@ -16,11 +16,16 @@ services:
       - mastodon_public_system:/mastodon/public/system
       - mastodon_log:/mastodon/log
     labels:
-      - traefik.frontend.rule=Host:mastodon.lavergne.online
-      - traefik.docker.network=proxy-network
-      - traefik.port=3000
-      - traefik.backend=mastodon-web
-      - traefik.frontend.entryPoints=https,http
+      - traefik.main.frontend.rule=Host:mastodon.lavergne.online
+      - traefik.main.docker.network=proxy-network
+      - traefik.main.port=3000
+      - traefik.main.backend=mastodon-web
+      - traefik.main.frontend.entryPoints=https,http
+      - traefik.stream.frontend.rule=Host:mastodon.lavergne.online;PathPrefixStrip:/api/v1/streaming
+      - traefik.stream.docker.network=proxy-network
+      - traefik.stream.port=4000
+      - traefik.stream.backend=mastodon-streaming
+      - traefik.stream.frontend.entryPoints=https,http
     environment:
       - WEB_CONCURRENCY=1
       - MAX_THREADS=5
