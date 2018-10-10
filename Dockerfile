@@ -15,7 +15,7 @@ RUN apk --no-cache upgrade \
        ca-certificates
 
 # Version
-ARG MASTODON_VERSION=2.4.5
+ARG MASTODON_VERSION=2.5.1
 
 ARG YARN_VERSION=1.5.1
 ARG YARN_DOWNLOAD_SHA256=cd31657232cf48d57fdbff55f38bfa058d2fb4950450bd34af72dac796af4de1
