@@ -38,6 +38,8 @@ networks:
     external:
       name: proxy-network
 
+# Simple volume mapped to a local directory /path/to/data :
+# docker volume create --opt type=none --opt device=/path/to/data --opt o=bind --name name_of_the_volume
 volumes:
   mastodon_public_assets:
     external: true
